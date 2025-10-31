@@ -107,3 +107,83 @@ grafico <- ggplot(prueba3, aes(x = año, y = Proporcion, fill = actividad,
 ggplotly(grafico, tooltip = "text")
 
 
+## Emisiones anuales por país
+emisiones_anuales <- read.csv("data/Argendata/CAMCLI/emisiones_anuales_co2_region.csv")
+
+tabla_emisiones_2023 <- emisiones_anuales %>% 
+  filter(!geonombreFundar %in% c("Mundo", "Transporte internacional") & anio == "2023") %>% 
+  group_by(geonombreFundar) %>% 
+  summarise(Emisiones = sum(valor_en_ton)) %>% 
+  arrange(-Emisiones)
+
+tabla_emisiones_2023_sin_null <- tabla_emisiones_2023 %>% 
+  filter(Emisiones > 0)
+
+tabla_cercanos_argentina <- tabla_emisiones_2023_sin_null %>% 
+  filter(Emisiones < (195805970*1.4) & Emisiones > (195805970*0.60))
+
+tabla_primeros_50 <- tabla_emisiones_2023_sin_null %>% 
+  top_n(50)
+
+
+
+## El gráfico de Arg
+ggplot(data = tabla_cercanos_argentina, 
+       aes(x= reorder(geonombreFundar, Emisiones), 
+           y = Emisiones, fill = geonombreFundar == "Argentina")) + 
+  geom_col() +   scale_fill_manual(values = c("TRUE" = "#E41a1C", "FALSE" = "gray70")) +
+  labs(
+    title = "Emisiones de países cercanos a Argentina",
+    subtitle = "Países con un 40% más (y menos) de Toneladas de CO2E",
+    x = "País o región",
+    y = "Emisiones totales (toneladas)",
+    caption = "Fuente: Elaboración Propia en base a datos del github de Fundar"
+  ) +
+theme_minimal() +
+  theme(
+    plot.title = element_text(face = "bold", size = 16, hjust = 0.5, color = "#333333"),
+    plot.subtitle = element_text(size = 12, hjust = 0.5, color = "gray30", margin = margin(b = 10)),
+    plot.caption = element_text(size = 10, color = "gray40", face = "italic", hjust = 1),
+    axis.title.x = element_text(size = 12, face = "bold", margin = margin(t = 10)),
+    axis.title.y = element_text(size = 12, face = "bold", margin = margin(r = 10)),
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 10, color = "gray20"),
+    axis.text.y = element_text(size = 10, color = "gray20"),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.y = element_line(color = "gray90"),
+        legend.position = "none"
+  )
+
+## Este es el de primeros 50 países emisores, remarcando a la Argentina
+ggplot(data = tabla_primeros_50, 
+       aes(x= reorder(geonombreFundar, Emisiones), 
+           y = Emisiones, fill = geonombreFundar == "Argentina")) + 
+  geom_col() +   scale_fill_manual(values = c("TRUE" = "#E41a1C", "FALSE" = "gray70")) +
+  labs(
+    title = "Emisiones de países",
+    subtitle = "50 Máximos Emisores de Toneladas de CO2E en 2023",
+    x = "País o región",
+    y = "Emisiones totales (toneladas)",
+    caption = "Fuente: Elaboración Propia en base a datos del github de Fundar"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(face = "bold", size = 16, hjust = 0.5, color = "#333333"),
+    plot.subtitle = element_text(size = 12, hjust = 0.5, color = "gray30", margin = margin(b = 10)),
+    plot.caption = element_text(size = 10, color = "gray40", face = "italic", hjust = 1),
+    axis.title.x = element_text(size = 12, face = "bold", margin = margin(t = 10)),
+    axis.title.y = element_text(size = 12, face = "bold", margin = margin(r = 10)),
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 8, color = "gray20"),
+    axis.text.y = element_text(size = 10, color = "gray20"),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.grid.major.y = element_line(color = "gray90"),
+    legend.position = "none"
+  )
+
+
+## Este no lo usamos porque es muy enquilombado
+ggplot(data = tabla_emisiones_2023_sin_null, aes(x= reorder(geonombreFundar, Emisiones), y = Emisiones)) + 
+  geom_col() + theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
