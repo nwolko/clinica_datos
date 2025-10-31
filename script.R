@@ -46,10 +46,6 @@ plot_evolucion_gases <-
   
 
 
-ggplot(data = prueba2, aes(x=año, y = Emisiones, color = actividad)) +
-  geom_density()
-
-
 
 ggplot(data = prueba2, aes(x = Emisiones, color = actividad)) +
   geom_density() +
@@ -61,10 +57,11 @@ prueba3 <- prueba2 %>%
   mutate(Proporcion = Emisiones / sum(Emisiones) * 100) %>%
   ungroup()
 
-plot3 <- ggplot(prueba3, aes(x = año, y = Proporcion, fill = actividad,
-                             twxt = paste0("Año: ", año,
-                                           "\nActividad: ", actividad,
-                                           "\nEmisiones: ", round(Proporcion, 0)))) +
+## Este es el gráfico de área sin el plotly
+plot2 <- ggplot(prueba3, aes(x = año, y = Proporcion, fill = actividad))+
+                             #text = paste0("Año: ", año,
+                              #             "\nActividad: ", actividad,
+                               #            "\nEmisiones: ", round(Proporcion, 0)))) +
   geom_area() +
   labs(title = "Distribución de Emisiones por Actividad",
        subtitle = "En Argentina",
@@ -81,7 +78,7 @@ plot3 <- ggplot(prueba3, aes(x = año, y = Proporcion, fill = actividad,
 ggplotly(plot2)
 
 
-
+## Este es el mismo pero en formato barra
 grafico <- ggplot(prueba3, aes(x = año, y = Emisiones, fill = actividad,
                                text = paste0("Año: ", año, 
                                              "\nSubactividad: ", actividad,
@@ -90,7 +87,7 @@ grafico <- ggplot(prueba3, aes(x = año, y = Emisiones, fill = actividad,
   theme_minimal()
 
 
-
+## Este es el que intenté para plotly pero tengo problemas con el text
 grafico <- ggplot(prueba3, aes(x = año, y = Proporcion, fill = actividad,
                                text = paste0("Año: ", año,
                                              "\nSubactividad: ", actividad,
@@ -105,6 +102,7 @@ grafico <- ggplot(prueba3, aes(x = año, y = Proporcion, fill = actividad,
     plot.title = element_text(hjust = 0.5, size = 16, face = "bold"),
     legend.position = "bottom"
   )
+
 
 ggplotly(grafico, tooltip = "text")
 
