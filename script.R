@@ -2,7 +2,6 @@
 
 library(tidyverse)
 library(sf)
-install.packages("plotly")
 library(plotly)
 
 ## Algunos datasets no tan trabajados
@@ -36,7 +35,7 @@ tabla_tipo_gas_ok <- prueba %>%
 
 ## Primeros gráficos para trabajar los datos
 plot_evolucion_gases <- 
-  ggplot(data = prueba1, aes(x= año, y = Emisiones, color = tipo_de_gas)) +
+  ggplot(data = prueba, aes(x= año, y = Emisiones, color = tipo_de_gas)) +
   geom_line() +
   labs(title = "Evolución de Emisiones por Tipo de Gas",
                     x = "Año",
@@ -46,17 +45,17 @@ plot_evolucion_gases <-
   
 
 
-ggplot(data = prueba2, aes(x=año, y = Emisiones, color = actividad)) +
+ggplot(data = prueba, aes(x=año, y = Emisiones, color = actividad)) +
   geom_density()
 
 
 
-ggplot(data = prueba2, aes(x = Emisiones, color = actividad)) +
+ggplot(data = prueba, aes(x = Emisiones, color = actividad)) +
   geom_density() +
   theme_minimal()
 
 ## Datos
-prueba3 <- prueba2 %>%
+prueba3 <- prueba %>%
   group_by(año) %>%
   mutate(Proporcion = Emisiones / sum(Emisiones) * 100) %>%
   ungroup()
@@ -108,4 +107,4 @@ grafico <- ggplot(prueba3, aes(x = año, y = Proporcion, fill = actividad,
 
 ggplotly(grafico, tooltip = "text")
 
-
+## prueba
