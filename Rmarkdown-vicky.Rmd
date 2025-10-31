@@ -1,0 +1,115 @@
+---
+title: "CLINICA-DE-DATOS"
+author: "Broggi"
+date: '2025'
+output: html_document
+---
+
+# **CAMBIO CLIMÁTICO**
+## **Emisiones de GEI y transición energías renovables**
+
+### **El desafío de diseño más grande de todos los tiempos**
+
+#### **SITUACION GLOBAL Y POSICION DE ARGENTINA**
+
+Analizar las emisiones de gases de efecto invernadero (GEI) a nivel mundial y la posición de Argentina. ¿Qué porcentaje aporta el país al total global? ¿Cómo se compara con otros países y regiones?
+
+Los gases de efecto invernadero (GEI) son gases atmosféricos presentes en la Tierra, muchos de ellos se producen de forma natural en la atmósfera. Sin embargo, la actividad humana contribuye a su acumulación y así es como aumenta el calentamiento de la Tierra. 
+
+Existen distintos tipos de gases de efecto invernadero y su contribución al calentamiento global varía:
+
+* El dióxido de carbono (CO2) 
+* el metano (CH4)
+* el óxido nitroso (N2O)
+* Los hidrofluorocarburos (HFC)
+* Los perfluorocarburos (PFC)
+
+En este trabajo estaremos explorando los datos existentes de emisiones de gases de efecto invernadero a nivel Mundial y específicamente en Argentina para ver dónde se ubica en relación al resto de países.
+
+#### **Emisiones de emisiones de gases de efecto invernadero (GEI) a nivel mundial**
+
+#### **La posición de Argentina en relación al mundo**
+
+#### **La proporción de emisiones de GEI por sector, en el Mundo y en Argentina**
+
+```{r}
+library(readr)
+library(stringi)
+library(dplyr)
+
+emisiones_mundo <- read_csv(
+  "data/Argendata/CAMCLI/emisiones_arg_mundo.csv",
+  locale = locale(encoding = "UTF-8")
+)
+
+emisiones_mundo$sector <- stri_trans_general(emisiones_mundo$sector, "Latin-ASCII")
+
+unique(emisiones_mundo$sector)
+```
+
+```{r}
+library(ggplot2)
+
+ggplot(emisiones_mundo, aes(x = geonombreFundar, 
+                            y = valor_en_porcent, 
+                            fill = sector)) +
+  geom_bar(stat = "identity", position = "fill") +
+  scale_y_continuous(labels = scales::percent_format()) +
+  scale_fill_manual(values = c(
+    "Energia" = "#E41A1C",                # rojo
+    "Procesos industriales y uso de productos" = "#9B59B6", # violeta
+    "Residuos" = "#D8BFD8",               # violeta claro
+    "AGSyOUT" = "#FF9999"                 # rojo claro
+  )) +
+  labs(title = "Proporcion de emisiones de GEI por sector", 
+      caption = "Fuente: Elaboración propia a partir de dataset de Argendata - Fundar",
+       x = "",
+       y = "Proporcion sobre el total (%)",
+       fill = "Sector", ) +
+  theme_minimal() +
+  theme (plot.title = element_text(size = 14, face = "bold"),
+    plot.subtitle = element_text(size = 12, color = "gray40"),
+    legend.position = "bottom",
+    panel.grid.minor = element_blank())
+ +
+  scale_y_continuous(labels = scales::comma)
+```
+AGSyOUT se refiere a las emisiones de Agricultura, Ganadería y Uso de la Tierra, incluye principalmente los gases de efecto invernadero (GEI) asociados a la producción agrícola y ganadera, cambios en el uso del suelo, deforestación y manejo de suelos agrícolas.
+
+En Argentina, el sector de Energía representa la mayor proporción de emisiones de GEI, aunque el aporte del sector AGSyOUT, relacionado con la agricultura, la ganadería y el uso del suelo, también es significativo, alcanzando aproximadamente un tercio de las emisiones totales. Por el contrario, a nivel mundial, el sector energético domina aún más las emisiones, mientras que el aporte relativo de la agricultura y ganadería es menor en comparación con Argentina. Esto refleja la importancia particular de las actividades agropecuarias en la huella de carbono de Argentina, frente a una matriz energética global más intensiva en combustibles fósiles. Los sectores de procesos industriales y uso de productos y residuos tienen una contribución menor tanto a nivel nacional como global.
+
+```{r}
+emisiones_mundo_serie <- read_csv(
+  "data/Argendata/CAMCLI/emisiones_global_sec_1850_2014.csv",
+  locale = locale(encoding = "UTF-8")
+)
+```
+
+```{r}
+ggplot(emisiones_mundo_serie, aes(x = anio, y = valor_en_ggco2e, color = sector, group = sector)) +
+  geom_line(size = 1) +
+  geom_point(size = 0.5) +
+  scale_color_manual(values = c(
+    "AGSyOUT" = "#10b981",
+    "Energía" = "#f59e0b",
+    "Otros" = "#6366f1",
+    "PIUP" = "#ec4899",
+    "Residuos" = "#8b5cf6"
+  )) +
+  labs(
+    title = "Evolución de Emisiones de GEI por Sector",
+    subtitle = "Emisiones mundiales en Gg CO2e a lo largo del tiempo",   caption = "Fuente: Elaboración propia a partir de dataset de Argendata - Fundar",
+    x = "Año",
+    y = "Emisiones (Gg CO2e)",
+    color = "Sector"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 14, face = "bold"),
+    plot.subtitle = element_text(size = 12, color = "gray40"),
+    legend.position = "bottom",
+    panel.grid.minor = element_blank()
+  ) +
+  scale_y_continuous(labels = scales::comma)
+```
+
