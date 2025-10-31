@@ -2,8 +2,11 @@
 
 library(tidyverse)
 library(sf)
-install.packages("plotly")
+## install.packages("plotly")
 library(plotly)
+library(readr)
+library(stringi)
+library(dplyr)
 
 ## Algunos datasets no tan trabajados
 evolucion_co2 <- read.csv("data/Argendata//CAMCLI/01_evolucion_CO2_historico.csv")
