@@ -109,3 +109,5 @@ grafico <- ggplot(prueba3, aes(x = año, y = Proporcion, fill = actividad,
 ggplotly(grafico, tooltip = "text")
 
 #Esto es una prueba del commit y pull request de GitHub.
+
+##Estoa es la segunda prueba.
