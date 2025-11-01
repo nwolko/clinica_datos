@@ -23,21 +23,19 @@ colnames(emisiones_prov)[-1] <- as.character(colnames(emisiones_prov)[-1])
 
 emisiones_por_prov <- emisiones_prov[-c(1, 2, 4, 30, 31, 32, 33, 34, 35), ]
 
-emisiones_por_prov <- emisiones_por_prov %>%
-  mutate(across(-Jurisdicción, as.numeric))
-
-emisiones_por_prov <- emisiones_por_prov %>%
+emisiones_por_prov_long <- emisiones_por_prov %>%
   pivot_longer(
-    cols = -Jurisdicción,
+    cols = -Provincia,
     names_to = "Año",
     values_to = "Emisiones"
   ) %>%
-  mutate(Año = as.numeric(Año))
+  mutate(Año = as.integer(as.numeric(Año)))
+
 
 emisiones_por_prov <- emisiones_por_prov_long %>%
-  filter(!Jurisdicción %in% c("Total Pais", "Sin asignar"))
+  filter(!Provincia %in% c("Total Pais", "Sin asignar"))
 
-ggplot(emisiones_por_prov, aes(x = Año, y = Emisiones, color = Jurisdicción)) +
+ggplot(emisiones_por_prov, aes(x = Año, y = Emisiones, color = Provincia)) +
   geom_line(size = 1) +
   coord_cartesian(ylim = c(0, 100)) +   
   theme_minimal() +
@@ -48,7 +46,7 @@ ggplot(emisiones_por_prov, aes(x = Año, y = Emisiones, color = Jurisdicción)) 
 
 ggplot(emisiones_por_prov, aes(x = Año, y = Emisiones)) +
   geom_line(color = "steelblue") +
-  facet_wrap(~ Jurisdicción, scales = "free_y") +
+  facet_wrap(~ Provincia, scales = "free_y") +
   theme_minimal() +
   labs(title = "Evolución de emisiones por provincia (2010–2022)",
        x = "Año", y = "Emisiones (Mt CO₂e)")
@@ -74,14 +72,15 @@ emisiones_prov_2022 <- emisiones_prov_2022 %>%
     )
   )
 
-arg <- ne_states(country = "Argentina", returnclass = "sf") %>%
-  mutate(Provincia = coalesce(name_es, name, gn_name),
-         Provincia_key = Provincia)
+#arg <- ne_states(country = "Argentina", returnclass = "sf") %>%
+#  mutate(Provincia = coalesce(name_es, name, gn_name),
+#         Provincia_key = Provincia)
 
-norm <- function(x) stri_trans_general(x, "Latin-ASCII") |> toupper() |> trimws()
+arg <- read_sf("data/mapas/provincia/provinciaPolygon.shp", options = "ENCODING=LATIN1")
 
-arg <- arg %>%
-  mutate(Provincia_key = norm(coalesce(name_es, name, gn_name)))
+#norm <- function(x) stri_trans_general(x, "Latin-ASCII") |> toupper() |> trimws()
+#arg <- arg %>%
+#  mutate(Provincia_key = norm(coalesce(fna)))
 
 mapa <- arg %>%
   left_join(emisiones_prov_2022 %>% select(Provincia_key, Emisiones), by = "Provincia_key")
