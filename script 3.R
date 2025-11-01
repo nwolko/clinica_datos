@@ -78,22 +78,24 @@ emisiones_prov_2022 <- emisiones_prov_2022 %>%
 
 arg <- read_sf("data/mapas/provincia/provinciaPolygon.shp", options = "ENCODING=LATIN1")
 
+arg <- arg %>% 
+  rename(Provincia = nam)
+
 #norm <- function(x) stri_trans_general(x, "Latin-ASCII") |> toupper() |> trimws()
 #arg <- arg %>%
 #  mutate(Provincia_key = norm(coalesce(fna)))
 
 mapa <- arg %>%
-  left_join(emisiones_prov_2022 %>% select(Provincia_key, Emisiones), by = "Provincia_key")
+  left_join(emisiones_prov_2022, by = "Provincia")
 
 summary(mapa$Emisiones)
 
 ggplot(mapa) +
   geom_sf(aes(fill = Emisiones), color = "white", size = 0.2) +
-  scale_fill_viridis_c(option = "C", direction = -1, name = "CO₂e 2022 (Mt)") +
+  scale_fill_viridis_c(option = "C", direction = -1, name = "CO2e 2022 (Mt)") +
   theme_minimal() +
-  labs(title = "Argentina · Emisiones de CO₂e por provincia (2022)",
-       caption = "Fuente: Inventario Nacional de GEI
-")
+  labs(title = "Argentina · Emisiones de CO2e por provincia (2022)",
+       caption = "Fuente: Inventario Nacional de GEI")
 
 ###2.c Serie de tiempo y densidad provincias
 ####2.c.1 Neuquén
