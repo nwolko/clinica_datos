@@ -15,7 +15,7 @@ output: html_document
 Analizar las emisiones de gases de efecto invernadero (GEI) a nivel mundial y la posición de Argentina. ¿Qué porcentaje aporta el país al total global? ¿Cómo se compara con otros países y regiones?
 ```{r}
 source("script.R")
-source("script2.R")
+source("script 3.R")
 ```
 
 Los gases de efecto invernadero (GEI) son gases atmosféricos presentes en la Tierra, muchos de ellos se producen de forma natural en la atmósfera. Sin embargo, la actividad humana contribuye a su acumulación y así es como aumenta el calentamiento de la Tierra. 
